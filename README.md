@@ -56,9 +56,13 @@ Azure Pipelines (3 pipelines: vote, worker, result)
 Screenshots included in this README document each stage of the setup, such as:
 
 - Azure Container Registry showing the three pushed repositories
+  <img width="1902" height="657" alt="image" src="https://github.com/user-attachments/assets/d4bc1832-d16a-473d-a7b8-ce512889ddab" />
+
 - The self-hosted agent (`azureagent`) configured and online
+  <img width="1916" height="1027" alt="image" src="https://github.com/user-attachments/assets/31bc8891-0cc5-4a07-b5aa-3cb9a2f9a1c7" />
+
 - The three pipelines and their run history
-- The separated build and push steps within a pipeline
+  <img width="1917" height="801" alt="image" src="https://github.com/user-attachments/assets/1b8a9928-6f79-4826-a15d-9547e38f1e50" />
 
 ## Tech Stack
 
