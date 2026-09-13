@@ -1,65 +1,72 @@
-# Example Voting App
+# Azure DevOps CI/CD Pipeline – Example Voting App
 
-A simple distributed application running across multiple Docker containers.
+This project demonstrates a complete CI/CD workflow built on **Azure DevOps**, using the popular open-source [Example Voting App](https://github.com/KaranGoyal134/example-voting-app.git) as the sample application. The goal of this project is to showcase practical, hands-on experience with Azure DevOps: repository integration, self-hosted agents, Azure Container Registry (ACR), and multi-service build pipelines.
 
-## Getting started
+## Project Overview
 
-Download [Docker Desktop](https://www.docker.com/products/docker-desktop) for Mac or Windows. [Docker Compose](https://docs.docker.com/compose) will be automatically installed. On Linux, make sure you have the latest version of [Compose](https://docs.docker.com/compose/install/).
+The Example Voting App is a microservices-based application made up of three main services:
 
-This solution uses Python, Node.js, .NET, with Redis for messaging and Postgres for storage.
+- **vote** – a front-end web app where users cast votes
+- **worker** – a background service that processes votes
+- **result** – a web app that displays voting results in real time
 
-Run in this directory to build and run the app:
+Each of these services is containerized using Docker, and this project builds a separate CI pipeline for each one.
 
-```shell
-docker compose up
-```
+## What This Project Demonstrates
 
-The `vote` app will be running at [http://localhost:8080](http://localhost:8080), and the `results` will be at [http://localhost:8081](http://localhost:8081).
+1. **Source Control Integration**
+   The application source code was forked/imported into an Azure DevOps organization and connected to Azure Repos so pipelines could be built directly against it.
 
-Alternately, if you want to run it on a [Docker Swarm](https://docs.docker.com/engine/swarm/), first make sure you have a swarm. If you don't, run:
+2. **Self-Hosted Agent Setup**
+   Instead of using Microsoft's hosted agents, a **self-hosted agent** was configured and registered following the official Azure DevOps documentation. The agent is named `azureagent`, is authenticated using a Personal Access Token (PAT), and is currently online and available for running pipeline jobs.
 
-```shell
-docker swarm init
-```
+3. **Azure Container Registry (ACR)**
+   An Azure Container Registry named `karanazuredevops` was created to store the Docker images built by the pipelines. It contains three repositories, one for each service:
+   - `result`
+   - `voteapp`
+   - `worker`
 
-Once you have your swarm, in this directory run:
+4. **Custom Build & Push Pipelines**
+   Azure Pipelines provides a built-in Docker task/template that combines "build" and "push" into a single step. In this project, that combined step was intentionally **split into two separate steps** — one for building the image and one for pushing it to ACR. This was done to have clearer, more granular control and visibility over each stage of the pipeline.
 
-```shell
-docker stack deploy --compose-file docker-stack.yml vote
-```
+5. **Three Independent Pipelines**
+   Three separate build pipelines were created, one per microservice (`vote`, `worker`, `result`). Each pipeline:
+   - Runs on the self-hosted agent (`azureagent`)
+   - Builds the Docker image for its respective service
+   - Pushes the built image to the corresponding repository in Azure Container Registry
 
-## Run the app in Kubernetes
+## Architecture Flow
+Azure Repos (source code)
+        │
+        ▼
+Azure Pipelines (3 pipelines: vote, worker, result)
+        │
+        ├── Build Step  → Docker image build (on self-hosted agent: azureagent)
+        │
+        └── Push Step   → Push image to Azure Container Registry
+                                 │
+                                 ▼
+                Azure Container Registry (karanazuredevops)
+                 ├── result
+                 ├── voteapp
+                 └── worker
 
-The folder k8s-specifications contains the YAML specifications of the Voting App's services.
+## Screenshots
 
-Run the following command to create the deployments and services. Note it will create these resources in your current namespace (`default` if you haven't changed it.)
+Screenshots included in this README document each stage of the setup, such as:
 
-```shell
-kubectl create -f k8s-specifications/
-```
+- Azure Container Registry showing the three pushed repositories
+- The self-hosted agent (`azureagent`) configured and online
+- The three pipelines and their run history
+- The separated build and push steps within a pipeline
 
-The `vote` web app is then available on port 31000 on each host of the cluster, the `result` web app is available on port 31001.
+## Tech Stack
 
-To remove them, run:
+- **Azure DevOps** – Repos, Pipelines, Agent Pools
+- **Azure Container Registry (ACR)** – Docker image storage
+- **Docker** – Containerization of services
+- **Self-hosted Agent** – Custom build agent (`azureagent`) instead of Microsoft-hosted agents
 
-```shell
-kubectl delete -f k8s-specifications/
-```
+## Purpose
 
-## Architecture
-
-![Architecture diagram](architecture.excalidraw.png)
-
-* A front-end web app in [Python](/vote) which lets you vote between two options
-* A [Redis](https://hub.docker.com/_/redis/) which collects new votes
-* A [.NET](/worker/) worker which consumes votes and stores them in…
-* A [Postgres](https://hub.docker.com/_/postgres/) database backed by a Docker volume
-* A [Node.js](/result) web app which shows the results of the voting in real time
-
-## Notes
-
-The voting application only accepts one vote per client browser. It does not register additional votes if a vote has already been submitted from a client.
-
-This isn't an example of a properly architected perfectly designed distributed app... it's just a simple
-example of the various types of pieces and languages you might see (queues, persistent data, etc), and how to
-deal with them in Docker at a basic level.
+This project was built as a learning and portfolio exercise to demonstrate practical Azure DevOps skills, including pipeline design, agent management, and container registry integration, using a real multi-service application as the example workload.
