@@ -90,6 +90,7 @@ Each of these services is containerized using Docker, and this project builds a 
               │  │    result   │                    │
               │  └─────────────┘                    │
               └─────────────────────────────────────┘
+```
 
 ## Screenshots
 
