@@ -45,10 +45,31 @@ stages:
     displayName: Push
     steps:
     - task: Docker@2
-      displayName: Build
+      displayName: Push
       inputs:
         containerRegistry: '$(dockerRegistryServiceConnection)'
         repository: '$(imageRepository)'
         command: 'push'
         tags: '$(tag)'
 
+- stage: UpdateManifests
+  displayName: Update Kubernetes Manifests
+
+  jobs:
+  - job: UpdateManifest
+    displayName: Update Manifest
+
+    steps:
+
+    - checkout: self
+
+    - bash: |
+        chmod +x scripts/script.sh
+
+        ./scripts/script.sh \
+          result \
+          karanazuredevops.azurecr.io \
+          $(Build.BuildId)
+      displayName: Update Kubernetes manifest
+      env:
+        PAT_TOKEN: $(PAT_TOKEN)

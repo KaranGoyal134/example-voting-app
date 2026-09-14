@@ -49,3 +49,25 @@ stages:
         repository: '$(imageRepository)'
         command: 'push'
         tags: '$(tag)'
+
+- stage: UpdateManifests
+  displayName: Update Kubernetes Manifests
+
+  jobs:
+  - job: UpdateManifest
+    displayName: Update Manifest
+
+    steps:
+
+    - checkout: self
+
+    - bash: |
+        chmod +x scripts/script.sh
+
+        ./scripts/script.sh \
+          worker \
+          karanazuredevops.azurecr.io \
+          $(Build.BuildId)
+      displayName: Update Kubernetes manifest
+      env:
+        PAT_TOKEN: $(PAT_TOKEN)
