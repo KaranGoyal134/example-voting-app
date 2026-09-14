@@ -24,7 +24,7 @@ Each of these services is containerized using Docker. This project builds a sepa
 - **Custom Build & Push Pipelines** – The built-in "build + push" Docker task was intentionally split into two separate steps (build, then push) for clearer, more granular visibility into each pipeline stage.
 - **Three Independent Pipelines** – One pipeline per microservice (`vote`, `worker`, `result`), each running on the `azureagent` self-hosted agent.
 
-### 2. Continuous Deployment via GitOps (New)
+### 2. Continuous Deployment via GitOps
 
 - **Kubernetes Cluster** – A Kubernetes cluster was provisioned to host the application workloads.
 - **ArgoCD for GitOps** – ArgoCD was installed on the cluster and configured to continuously watch the `k8s-specifications/` folder in this repository as its source of truth. Any change committed to the manifests in that folder is automatically synced and applied to the cluster by ArgoCD.
@@ -118,14 +118,30 @@ This closes the loop from **code commit → image build → image push → manif
 
 ## Screenshots
 
-Screenshots included in this README document each stage of the setup, such as:
+**GitOps / ArgoCD setup**
+![ArgoCD / GitOps setup](image.png)
 
-- Azure Container Registry showing the three pushed repositories
-- The self-hosted agent (`azureagent`) configured and online
-- The three Azure pipelines and their run history
+**CI Pipelines**
 
+Successful pipeline runs for all three services (vote, worker, result):
+![Successful pipeline runs](image-3.png)
+
+**Infrastructure**
+
+Azure Repos:
+![Azure Repos](image-5.png)
+
+VMSS Network Security Group :
+![VMSS NSG](image-4.png)
+
+**Deployed Application**
+
+Vote app UI:
+![Vote app](image-2.png)
+
+Result app UI:
+![Deployed app result](image-1.png)
 
 ## Purpose
 
 This project was built as a learning and portfolio exercise to demonstrate practical, end-to-end DevOps skills — spanning CI pipeline design, container registry integration, Kubernetes deployment, and GitOps-based continuous delivery with ArgoCD — using a real multi-service application as the example workload.
-
