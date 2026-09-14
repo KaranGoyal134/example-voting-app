@@ -36,20 +36,60 @@ Each of these services is containerized using Docker, and this project builds a 
    - Pushes the built image to the corresponding repository in Azure Container Registry
 
 ## Architecture Flow
-Azure Repos (source code)
-        │
-        ▼
-Azure Pipelines (3 pipelines: vote, worker, result)
-        │
-        ├── Build Step  → Docker image build (on self-hosted agent: azureagent)
-        │
-        └── Push Step   → Push image to Azure Container Registry
+
+```text
+                    ┌──────────────────────────┐
+                    │       Azure Repos        │
+                    │        (Source Code)     │
+                    └────────────┬─────────────┘
                                  │
                                  ▼
-                Azure Container Registry (karanazuredevops)
-                 ├── result
-                 ├── voteapp
-                 └── worker
+                    ┌──────────────────────────┐
+                    │     Azure Pipelines      │
+                    │                          │
+                    │  ┌────────────────────┐  │
+                    │  │   Vote Pipeline    │  │
+                    │  └────────────────────┘  │
+                    │  ┌────────────────────┐  │
+                    │  │  Worker Pipeline   │  │
+                    │  └────────────────────┘  │
+                    │  ┌────────────────────┐  │
+                    │  │  Result Pipeline   │  │
+                    │  └────────────────────┘  │
+                    └────────────┬─────────────┘
+                                 │
+                         Self-Hosted Agent
+                          Pool: azureagent
+                                 │
+                                 ▼
+                    ┌──────────────────────────┐
+                    │       Docker Build       │
+                    │                          │
+                    │   Build Docker Images    │
+                    └────────────┬─────────────┘
+                                 │
+                                 ▼
+                    ┌──────────────────────────┐
+                    │       Docker Push        │
+                    │                          │
+                    │   Push Images to ACR     │
+                    └────────────┬─────────────┘
+                                 │
+                                 ▼
+              ┌─────────────────────────────────────┐
+              │     Azure Container Registry        │
+              │       karanazuredevops              │
+              │                                     │
+              │  ┌─────────────┐                    │
+              │  │    voteapp  │                    │
+              │  └─────────────┘                    │
+              │  ┌─────────────┐                    │
+              │  │    worker   │                    │
+              │  └─────────────┘                    │
+              │  ┌─────────────┐                    │
+              │  │    result   │                    │
+              │  └─────────────┘                    │
+              └─────────────────────────────────────┘
 
 ## Screenshots
 
